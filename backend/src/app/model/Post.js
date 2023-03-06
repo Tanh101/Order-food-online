@@ -9,6 +9,9 @@ const PostSchema = new Schema({
     description: {
         type: String
     },
+    url: {
+        type: String
+    },
     status: {
         type: String,
         enum: ['TO LEARN', 'LEARNING', 'LEARNED']

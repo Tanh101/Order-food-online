@@ -3,8 +3,14 @@ const Post = require('../model/Post');
 const router = express.Router();
 
 const postController = {
+
+    // @route POST api/post/create
+    // desc Create a post 
+    // @access private
+
     createPost: async (req, res) => {
-        const {title, description, url, status, userId} = req.body;
+        console.log(req.body);
+        const {title, description, url, status} = req.body;
         if(!title){
             return res.status(400).json({
                 success: false,
@@ -12,13 +18,13 @@ const postController = {
             });
         }
         try {
-            console.log(req.user._id);
+            console.log(req.user);
             const newPost = new Post({
                 title, 
                 description,
                 url: url.startsWith('https://') ? url : `https://${url}`,
                 status: status || 'TO LEARN',
-                user: req.user._id
+                user: req.user.userId
             });
             await newPost.save();
             return res.status(200).json({
@@ -35,6 +41,59 @@ const postController = {
             });
         }
     },
+
+
+    getAllPosts: async (req, res) => {
+        try {
+            const posts = await Post.find({user: req.user.userId}).populate('user', ['usename']);
+            return res.status(200).json({
+                success: true,
+                posts
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+    }, 
+
+    updatePost: async (req, res)=> {
+        try {
+            const {title, description, url, status} = req.body;
+            if(!title) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing title'
+                });
+            }
+            let updatePost = {
+                title, 
+                description: description || '',
+                url: (url.startsWith('https://')? url : `https://${url}`),
+                status: status || 'TO LEARN',
+            };
+
+            updatePost = await Post.findOneAndUpdate({_id: req.params.id, user: req.user.userId}, updatePost, {new: true});;
+
+            return res.status(200).json({
+                success: true,
+                message: 'Update post successfully',
+                post: updatePost
+            })
+
+            
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+    },
+    
+
+
+
 
 };
 

@@ -15,5 +15,5 @@ db.connect();
 app.use(express.json());
 
 app.use('/api/auth', authRouter);
-app.use('/api/post', postRouter);
+app.use('/api/posts', postRouter);
 app.listen(5000, () => console.log(`Server stated on port ${5000}`));
