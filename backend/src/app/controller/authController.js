@@ -48,19 +48,20 @@ const authController = {
             userId: user._id, 
             username: user.username
         }, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '100s'});
+        return accessToken;
     },
 
     login: async (req, res) => {
         try {
-            const {username, password} = req.body;
-            if(!username || !password) {
+            // const {username, password} = req.body;
+            if(!req.body.username || !req.body.password) {
                 return res.status(400).json({
                     success: false,
                     message: "Missing username or password"
                 });
             }
 
-            const user = await User.findOne(username);
+            const user = await User.findOne({username: req.body.username});
             if(!user) {
                 return res.status(400).json({
                     success: false,
@@ -68,7 +69,7 @@ const authController = {
                 });
             }
 
-            const isValidPassword = await bcrypt.compare(password, user.password);
+            const isValidPassword = await bcrypt.compare(req.body.password, user.password);
             if(!isValidPassword) {
                 return res.status(400).json({
                     success: false,
@@ -76,10 +77,12 @@ const authController = {
                 });
             }
             //all good
+            const {password, ...others} = user._doc;
             const accessToken = await authController.generateAccesstoken(user);
             return res.json({
                 success: true,
                 message: 'Login successfully',
+                ...others,
                 accessToken
             });
 

@@ -8,7 +8,7 @@ const auth = require('../middleware/auth');
 //@route GET api/post
 //@desc Get all post
 //access public
-router.post('/', auth.verifyToken, postController.createPost);
+router.post('/create', auth.verifyToken, postController.createPost);
 
 
 
