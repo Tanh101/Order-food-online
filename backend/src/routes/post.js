@@ -22,6 +22,11 @@ router.get('/', auth.verifyToken, postController.getAllPosts);
 // access  private
 router.put('/update/:id', auth.verifyToken, postController.updatePost);
 
+//@route DELETE api/posts/delete
+//@desc Delete a post
+//access private
+router.delete('delete/:id', auth.verifyToken, postController.deletePost);
+
 
 
 module.exports = router;
